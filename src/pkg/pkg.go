@@ -5,38 +5,60 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
+)
+
+const (
+	errDirectory     = "failed to open directory"
+	errReadContent   = "failed to read directory content"
+	errTemplate      = "failed to read template"
+	errTemplateParse = "failed to parse template"
 )
 
 // PopulateTemplates reads and parses all the available templates
 func PopulateTemplates() map[string]*template.Template {
-	result := make(map[string]*template.Template)
-	const basePath = "/src/app/templates"
-	layout := template.Must(template.ParseFiles(basePath + "/_layout.html"))
-	template.Must(layout.ParseFiles(basePath+"/_header.html", basePath+"/_footer.html"))
-	dir, err := os.Open(basePath + "/content")
-	if err != nil {
-		log.Fatal("Failed to open template blocks directory: " + err.Error())
-	}
+	pwd, _ := os.Getwd()
+	basePath := join(pwd, "src", "app", "templates")
+
+	layout := template.Must(
+		template.ParseFiles(join(basePath, "_layout.html")),
+	)
+	template.Must(
+		layout.ParseFiles(
+			join(basePath, "_header.html"),
+			join(basePath, "_footer.html"),
+		),
+	)
+	dir, err := os.Open(join(basePath, "content"))
+	CheckError(err, errDirectory)
+
 	fis, err := dir.Readdir(-1)
-	if err != nil {
-		log.Fatal("Failed to read contents of content directory: " + err.Error())
-	}
+	CheckError(err, errReadContent)
+
+	result := map[string]*template.Template{}
 	for _, fi := range fis {
-		f, err := os.Open(basePath + "/content/" + fi.Name())
-		if err != nil {
-			log.Fatal("Failed to open template '" + fi.Name() + "'")
-		}
+		f, err := os.Open(join(basePath, "content", fi.Name()))
+		CheckError(err, errTemplate+" "+fi.Name())
 		content, err := ioutil.ReadAll(f)
-		if err != nil {
-			log.Fatal("Failed to read content from file '" + fi.Name() + "'")
-		}
+		CheckError(err, errTemplate+" "+fi.Name())
 		f.Close()
+
 		tmpl := template.Must(layout.Clone())
 		_, err = tmpl.Parse(string(content))
-		if err != nil {
-			log.Fatal("Failed to parse contents of '" + fi.Name() + "' as template")
-		}
+		CheckError(err, errTemplateParse+" "+fi.Name())
 		result[fi.Name()] = tmpl
 	}
 	return result
+}
+
+// CheckError checks if there is an error.
+// If so, prefix the error with given message.
+func CheckError(err error, message string) {
+	if err != nil {
+		log.Fatalf("%v: %v", message, err)
+	}
+}
+
+func join(paths ...string) string {
+	return filepath.Join(paths...)
 }
