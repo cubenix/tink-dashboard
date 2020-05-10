@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Gaurav Gahlot">
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+  <script src="https://momentjs.com/downloads/moment.min.js"></script>
+
+  <!-- Custom fonts for this template-->
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Set page title -->
+  <title>{{ .Title }} | Tinkerbell Dashboard</title>
+
+  <!-- Custom styles for this template-->
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+  
+  {{block "styles" .}}{{end}}
+</head>
+
+<body id="page-top">
+
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+    {{template "_header.html" .}}
+
+    <!-- Bootstrap core JQuery-->
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <!-- Begin Page Content -->
+          <div class="container-fluid">            
+            <!-- TODO: Remove the <br> tag  -->
+            <br>
+            <!-- Render content from /templates/content/*.html -->
+            {{template "content" .}}      
+          </div>
+          <!-- /.container-fluid -->
+        </div>
+        <!-- End of Main Content -->     
+        
+        <!-- Footer -->
+          {{template "_footer.html" .}}
+        <!-- End of Footer -->
+    </div>
+    <!-- End of Content Wrapper -->
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <!-- Core plugin JavaScript-->
+  <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="/js/sb-admin-2.min.js"></script> 
+  
+  {{block "scripts" .}}{{end}}
+</body>
+</html>
