@@ -1,22 +1,63 @@
 package main
 
 import (
-	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strconv"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gauravgahlot/frawn/src/pkg"
 	"github.com/gauravgahlot/frawn/src/pkg/controller"
 )
 
-const applicationPort = ":5000"
+const (
+	applicationPort  = ":7676"
+	serverCRT        = "tls/server.pem"
+	serverKey        = "tls/server-key.pem"
+	envAllowInsecure = "ALLOW_INSECURE"
+
+	infoServerListening = "server listening at port %v"
+	errAllowInsecure    = "failed to parse env variable ALLOW_INSECURE"
+	errTLSSetup         = "failed to setup TLS"
+	errServer           = "failed to start the server"
+	warnHostingInsecure = "hosting an insecure server"
+)
+
+func init() {
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
+}
 
 func main() {
 	templates := pkg.PopulateTemplates()
 	controller.Startup(templates)
+	startListening()
+}
 
-	server := http.Server{
-		Addr: applicationPort,
+func startListening() {
+	allowInsecure := false
+	if env := os.Getenv(envAllowInsecure); env != "" {
+		insecure, err := strconv.ParseBool(env)
+		if err != nil {
+			log.Fatal(errAllowInsecure)
+		}
+		allowInsecure = insecure
 	}
-	log.Println("server listening at port", applicationPort)
-	log.Fatal(server.ListenAndServe())
+
+	pwd, _ := os.Getwd()
+	log.Infof(infoServerListening, applicationPort)
+	if !allowInsecure {
+		log.Fatal(
+			http.ListenAndServeTLS(
+				applicationPort,
+				filepath.Join(pwd, serverCRT),
+				filepath.Join(pwd, serverKey),
+				nil,
+			))
+	} else {
+		log.Warn(warnHostingInsecure)
+		log.Fatal(http.ListenAndServe(applicationPort, nil))
+	}
 }

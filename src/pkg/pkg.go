@@ -3,9 +3,10 @@ package pkg
 import (
 	"html/template"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const (
