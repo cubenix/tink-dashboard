@@ -37,7 +37,7 @@ run: build gen-certs
 
 run-insecure: build
 	docker run -d -e ALLOW_INSECURE=true -p 7676:7676 ${PROJECT_NAME}:latest sh
-	echo "server listening at https://localhost:7676"
+	echo "server listening at http://localhost:7676"
 
 clean:
 	rm -rf ${TLS_DIR}/certs

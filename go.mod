@@ -1,4 +1,4 @@
-module github.com/gauravgahlot/frawn
+module github.com/gauravgahlot/tink-wizard
 
 go 1.14
 

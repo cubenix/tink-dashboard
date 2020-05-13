@@ -1,4 +1,4 @@
-# frawn
+# tink-wizard
 
 Clone the repository with:
 ```
@@ -12,10 +12,12 @@ Once you have updated the `/tls` definitions, all you need is to run:
 ```
 $ make run
 ```
+You can now access tink-wizard at [https://localhost:7676](https://localhost:7676).
 
 You can also start the server in an insecure mode by executing the following:
 ```
 $ make run-insecure
 ```
+You can now access tink-wizard at [http://localhost:7676](http://localhost:7676).
 
 Please refer to the `Makefile`, for all that is happening behind the scenes.
