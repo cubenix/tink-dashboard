@@ -14,8 +14,8 @@ import (
 
 const (
 	applicationPort  = ":7676"
-	serverCRT        = "tls/server.crt"
-	serverKey        = "tls/server.key"
+	serverCRT        = "tls/server.pem"
+	serverKey        = "tls/server-key.pem"
 	envAllowInsecure = "ALLOW_INSECURE"
 
 	infoServerListening = "server listening at port %v"
