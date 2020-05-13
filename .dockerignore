@@ -1,0 +1,7 @@
+.DS_Store
+.idea
+.git
+.vscode
+.gitignore
+README.md
+**/certs
