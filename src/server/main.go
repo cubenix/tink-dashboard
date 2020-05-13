@@ -8,8 +8,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gauravgahlot/frawn/src/pkg"
-	"github.com/gauravgahlot/frawn/src/pkg/controller"
+	"github.com/gauravgahlot/tink-wizard/src/pkg"
+	"github.com/gauravgahlot/tink-wizard/src/pkg/controller"
 )
 
 const (
