@@ -13,7 +13,7 @@ const (
 )
 
 type home struct {
-	homeTemplate *template.Template
+	template *template.Template
 }
 
 func (h home) registerRoutes() {
@@ -24,6 +24,6 @@ func (h home) registerRoutes() {
 func (h home) handleHome(w http.ResponseWriter, r *http.Request) {
 	data := types.Home{Message: "Hello World!"}
 	data.Title = "Home"
-	err := h.homeTemplate.Execute(w, data)
+	err := h.template.Execute(w, data)
 	pkg.CheckError(err, errTemplateExecute)
 }
