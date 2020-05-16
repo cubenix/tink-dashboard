@@ -1,0 +1,112 @@
+{{ define "styles" }}
+  <style>
+    a:link, a:visited {
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+{{ end }}
+
+{{ define "content" }}
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-900">Workflow Templates</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+      <div class="col-lg-4">
+        <!-- Template List -->
+        <div class="card shadow mb-4">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Templates</h6>
+          </div>
+
+          <div class="container" id="template-list">
+            {{ with .Templates }} 
+              {{ range . }}
+                <div class="card shadow mb-4">
+                  <!-- Card Header - Accordion -->
+                  <a href="#tmpl-{{.ID}}" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="tmpl-{{.ID}}">
+                    <h6 class="m-0 font-weight-bold" style="color: rgb(142, 40, 6);">{{ .Name }}</h6>
+                  </a>
+                  <!-- Card Content - Collapse -->
+                  <div class="collapse" id="tmpl-{{.ID}}" data-parent="#template-list">
+                    <div class="card-body">
+                      <div>
+                        <strong>ID: </strong><span class="float-right">{{ .ID }}</span>
+                      </div>
+                      <div>
+                        <strong>Updated: </strong><span class="float-right">{{ .LastUpdated }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <script>
+                  $("#tmpl-{{.ID}}").on("show.bs.collapse", function () {
+                    $.ajax({
+                      'url' : '/template',
+                      'type' : 'POST',
+                      'data' : JSON.stringify({ id: '{{.ID}}' }),
+                      'success' : function(data) { 
+                        // hideError()                  
+                        document.getElementById("template-data").value = data;                  
+                      },
+                      'error' : function(jqXHR, request, error) {
+                        if (jqXHR.status == 400 || jqXHR.status == 404) {
+                          // displayError(error, jqXHR.status)
+                          document.getElementById("template-data").value = "";                        
+                        } else {
+                          // displayError('Something went wrong! Please report this to https://github.com/gauravgahlot/tink-wizard/issues', 500)
+                        }
+                      }
+                    });
+                  })
+                </script>
+              {{ end }}
+            {{ end }}
+          </div>
+        </div>
+      </div> <!-- end col template list -->
+
+      <div class="col-lg-6">
+        <!-- Template Data -->
+        <div class="card shadow mb-4">
+          <!-- Card Header - Dropdown -->
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Template Data</h6>
+          </div>
+          <!-- Card Body -->
+          <div class="card-body">
+            <div class="position-relative form-group apply_space" style="height:85%;">
+              <textarea class="form-control codemirror-textarea" id="template-data" rows="25" style="border: none;"></textarea>
+            </div>
+          </div>
+        </div>
+      </div> <!-- end col template data -->
+    </div> <!-- row end -->
+
+{{end}}
+
+{{ define "scripts" }}
+  <script type="text/javascript" src="/plugin/codemirror/lib/codemirror.js"></script>
+  <script src="/plugin/codemirror/mode/yaml/yaml.js"></script>
+  <script>
+    function displayError(err, code){
+      document.getElementById("error").innerHTML=400;
+      document.getElementById("error-status").setAttribute("data-text", 400);
+      document.getElementById("error-text").value=error;
+      document.getElementById("error").style.display="inline"
+    }
+    
+    function hideError(){
+      document.getElementById("error").style.display="none";
+      document.getElementById("error-status").setAttribute("data-text", "");
+      document.getElementById("error").innerHTML="";
+      document.getElementById("error-text").innerHTML="";
+    }
+</script>
+  
+{{ end }}
