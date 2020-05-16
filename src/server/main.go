@@ -8,6 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/gauravgahlot/tink-wizard/src/client"
 	"github.com/gauravgahlot/tink-wizard/src/pkg"
 	"github.com/gauravgahlot/tink-wizard/src/pkg/controller"
 )
@@ -27,7 +28,8 @@ const (
 
 func init() {
 	log.SetOutput(os.Stdout)
-	log.SetLevel(log.InfoLevel)
+	log.SetLevel(log.DebugLevel)
+	client.Init()
 }
 
 func main() {
