@@ -22,6 +22,7 @@ type tmpl struct {
 func (t tmpl) registerRoutes() {
 	http.HandleFunc("/template/list", t.listTemplates)
 	http.HandleFunc("/template", t.getTemplate)
+	http.HandleFunc("/template/update", t.updateTemplate)
 }
 
 func (t tmpl) listTemplates(w http.ResponseWriter, r *http.Request) {
@@ -54,4 +55,22 @@ func (t tmpl) getTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	io.WriteString(w, tmp.Data)
+}
+
+func (t tmpl) updateTemplate(w http.ResponseWriter, r *http.Request) {
+	var req types.UpdateTemplate
+	decErr := json.NewDecoder(r.Body).Decode(&req)
+	if decErr != nil {
+		log.Errorf("bad request: ", decErr)
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+	err := client.UpdateTemplate(context.Background(), req.ID, req.Data)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, fmt.Sprintf("No template found for ID: %v", req.ID), http.StatusNotFound)
+		return
+	}
+	w.WriteHeader(http.StatusAccepted)
+	io.WriteString(w, "Template updated successfully")
 }
