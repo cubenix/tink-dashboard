@@ -1,7 +1,12 @@
 .DS_Store
 .idea
-.git
 .vscode
+.git
 .gitignore
-README.md
-**/certs
+.gitattributes
+*.md
+!README.md
+Dockerfile
+sample-data/
+tls/
+
