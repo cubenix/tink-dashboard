@@ -51,15 +51,16 @@
                       'type' : 'POST',
                       'data' : JSON.stringify({ id: '{{.ID}}' }),
                       'success' : function(data) { 
-                        // hideError()                  
+                        hideAlert();                  
                         document.getElementById("template-data").value = data;                  
                       },
                       'error' : function(jqXHR, request, error) {
                         if (jqXHR.status == 400 || jqXHR.status == 404) {
-                          // displayError(error, jqXHR.status)
+                          displayAlert(jqXHR.status, jqXHR.responseText, "danger");
                           document.getElementById("template-data").value = "";                        
                         } else {
-                          // displayError('Something went wrong! Please report this to https://github.com/gauravgahlot/tink-wizard/issues', 500)
+                          displayAlert(jqXHR.status, "Something went wrong! Please report this to https://github.com/gauravgahlot/tink-wizard/issues", "danger");
+                          document.getElementById("template-data").value = "";                        
                         }
                       }
                     });
@@ -92,21 +93,5 @@
 
 {{ define "scripts" }}
   <script type="text/javascript" src="/plugin/codemirror/lib/codemirror.js"></script>
-  <script src="/plugin/codemirror/mode/yaml/yaml.js"></script>
-  <script>
-    function displayError(err, code){
-      document.getElementById("error").innerHTML=400;
-      document.getElementById("error-status").setAttribute("data-text", 400);
-      document.getElementById("error-text").value=error;
-      document.getElementById("error").style.display="inline"
-    }
-    
-    function hideError(){
-      document.getElementById("error").style.display="none";
-      document.getElementById("error-status").setAttribute("data-text", "");
-      document.getElementById("error").innerHTML="";
-      document.getElementById("error-text").innerHTML="";
-    }
-</script>
-  
+  <script src="/plugin/codemirror/mode/yaml/yaml.js"></script>  
 {{ end }}

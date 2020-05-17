@@ -42,25 +42,8 @@
             <!-- TODO: Remove the <br> tag  -->
             <br>
 
-            <!-- Error Text -->
-            <style>
-              #error {
-                width: 50%;
-                margin: auto;
-                border: 1px solid azure;
-                display: none;
-                padding: 10px;
-                /* text-align: center; */
-              }
-
-              .error {
-                font-size: 3rem;
-              }
-            </style>
-
-            <div id="error" class="text-center">
-              <p id="error-status" class="error mx-auto" data-text="404">404</p>
-              <p id="error-text" class="lead text-gray-800 mb-5">Page Not Found</p>
+            <!-- Alert -->
+            <div id="alert" class="alert " role="alert">
             </div>
 
             <!-- Render content from /templates/content/*.html -->
@@ -86,7 +69,22 @@
 
   <!-- Custom scripts for all pages-->
   <script src="https://gitcdn.link/repo/gauravgahlot/assets/master/js/script.min.js"></script> 
-  
+  <script>
+    function displayAlert(status, errMessage, category) {
+      alert = document.getElementById("alert");
+      alert.className += "alert-" + category;
+      alert.innerHTML = "<strong>Oos! Got a " + status + "</strong>. " + errMessage + ".";
+      $(alert).show();
+    }
+   
+    function hideAlert(){
+      alert = document.getElementById("alert");
+      alert.className = "alert ";
+      alert.innerHTML = "";
+      $(alert).hide();    
+    }
+  </script>
+
   {{block "scripts" .}}{{end}}
 </body>
 </html>

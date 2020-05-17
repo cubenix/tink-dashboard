@@ -50,7 +50,7 @@ func (t tmpl) getTemplate(w http.ResponseWriter, r *http.Request) {
 	tmp, err := client.GetTemplate(context.Background(), req.ID)
 	if err != nil {
 		log.Error(err)
-		http.Error(w, fmt.Sprintf("No template found for id %v", req.ID), http.StatusNotFound)
+		http.Error(w, fmt.Sprintf("No template found for ID: %v", req.ID), http.StatusNotFound)
 		return
 	}
 	io.WriteString(w, tmp.Data)
