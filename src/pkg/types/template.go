@@ -13,3 +13,10 @@ type Template struct {
 	Data        string
 	LastUpdated string
 }
+
+// UpdateTemplate represents an update request for a template
+type UpdateTemplate struct {
+	ID   string
+	Name string
+	Data string
+}

@@ -70,18 +70,16 @@
   <!-- Custom scripts for all pages-->
   <script src="https://gitcdn.link/repo/gauravgahlot/assets/master/js/script.min.js"></script> 
   <script>
-    function displayAlert(status, errMessage, category) {
+    function displayAlert(status, message, category) {
       alert = document.getElementById("alert");
-      alert.className += "alert-" + category;
-      alert.innerHTML = "<strong>Oos! Got a " + status + "</strong>. " + errMessage + ".";
+      alert.className = "alert alert-" + category;
+      if (status == "") {
+        alert.innerHTML = "<strong>" + message + ".</strong";
+      } else {
+        alert.innerHTML = "<strong>Oos! Got a " + status + "</strong>. " + message + ".";
+      }
       $(alert).show();
-    }
-   
-    function hideAlert(){
-      alert = document.getElementById("alert");
-      alert.className = "alert ";
-      alert.innerHTML = "";
-      $(alert).hide();    
+      $(alert).delay(5000).hide('slow');
     }
   </script>
 

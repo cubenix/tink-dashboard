@@ -51,3 +51,12 @@ func GetTemplate(ctx context.Context, id string) (types.Template, error) {
 		Data: string(t.GetData()),
 	}, nil
 }
+
+// UpdateTemplate updates the give template
+func UpdateTemplate(ctx context.Context, id string, data string) error {
+	_, err := templateClient.UpdateTemplate(ctx, &template.WorkflowTemplate{
+		Id:   id,
+		Data: []byte(data),
+	})
+	return err
+}

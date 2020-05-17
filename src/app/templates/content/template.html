@@ -4,6 +4,9 @@
       text-decoration: none;
       cursor: pointer;
     }
+    .btn {
+      cursor: pointer;
+    }
   </style>
 {{ end }}
 
@@ -23,6 +26,9 @@
             <h6 class="m-0 font-weight-bold text-primary">Templates</h6>
           </div>
 
+          <script>
+            let selectedTemplateID = "";
+          </script>
           <div class="container" id="template-list">
             {{ with .Templates }} 
               {{ range . }}
@@ -46,15 +52,16 @@
 
                 <script>
                   $("#tmpl-{{.ID}}").on("show.bs.collapse", function () {
+                    selectedTemplateID = '{{.ID}}';
                     $.ajax({
                       'url' : '/template',
                       'type' : 'POST',
-                      'data' : JSON.stringify({ id: '{{.ID}}' }),
-                      'success' : function(data) { 
-                        hideAlert();                  
-                        document.getElementById("template-data").value = data;                  
+                      'data' : JSON.stringify({ id: selectedTemplateID}),
+                      'success' : function(data) {             
+                        document.getElementById("template-data").value = data;
+                        $('#edit-template').css("display", "inline");         
                       },
-                      'error' : function(jqXHR, request, error) {
+                      'error' : function(jqXHR) {
                         if (jqXHR.status == 400 || jqXHR.status == 404) {
                           displayAlert(jqXHR.status, jqXHR.responseText, "danger");
                           document.getElementById("template-data").value = "";                        
@@ -78,11 +85,18 @@
           <!-- Card Header - Dropdown -->
           <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold text-primary">Template Data</h6>
+            <div>
+              <a id="edit-template" class="btn" style="display: none;" onclick="allowTemplateEdit()"><i class="fas fa-edit text-success"></i></a>
+              <a id="update-template" class="btn" style="display: none;" onclick="updateTemplate()"><i class="fas fa-file-upload text-warning"></i></a>
+              <a id="cancel-edit" class="btn" style="display: none;" onclick="cancelEdit()"><i class="fas fa-times text-danger"></i></a>
+            </div>
           </div>
           <!-- Card Body -->
           <div class="card-body">
             <div class="position-relative form-group apply_space" style="height:85%;">
-              <textarea class="form-control codemirror-textarea" id="template-data" rows="25" style="border: none;"></textarea>
+              <textarea readonly class="form-control codemirror-textarea" id="template-data" rows="25" 
+                  style="border: none; background-color: #fff;">
+              </textarea>
             </div>
           </div>
         </div>
@@ -94,4 +108,44 @@
 {{ define "scripts" }}
   <script type="text/javascript" src="/plugin/codemirror/lib/codemirror.js"></script>
   <script src="/plugin/codemirror/mode/yaml/yaml.js"></script>  
+  <script>
+    let orgData = "";
+    function allowTemplateEdit() {
+      orgData = $('#template-data').val();
+      $('#template-data').prop('readonly', false);
+      $('#update-template').css("display", "inline");
+      $('#cancel-edit').css("display", "inline");
+      $('#edit-template').css("display", "none");
+    }
+
+    function cancelEdit() {
+      $('#template-data').val(orgData);
+      $('#template-data').prop('readonly', true);
+      $('#edit-template').css("display", "inline");
+      $('#update-template').css("display", "none");
+      $('#cancel-edit').css("display", "none");
+    }
+
+    function updateTemplate() {
+      newData = $('#template-data').val();
+      $.ajax({
+        'url' : '/template/update',
+        'type' : 'POST',
+        'data' : JSON.stringify({ id: selectedTemplateID, data: newData}),
+        'success' : function(data) { 
+          displayAlert("", data, "success");
+          $('#edit-template').css("display", "inline");
+          $('#update-template').css("display", "none");
+          $('#cancel-edit').css("display", "none");
+        },
+        'error' : function(jqXHR) {
+          if (jqXHR.status == 400 || jqXHR.status == 404) {
+            displayAlert(jqXHR.status, jqXHR.responseText, "danger");
+          } else {
+            displayAlert(jqXHR.status, "Something went wrong! Please report this to https://github.com/gauravgahlot/tink-wizard/issues", "danger");                   
+          }
+        }
+      });
+    }
+  </script>
 {{ end }}
