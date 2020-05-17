@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/tinkerbell/tink/protos/hardware"
 	"github.com/tinkerbell/tink/protos/template"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -17,6 +18,7 @@ import (
 // gRPC clients
 var (
 	templateClient template.TemplateClient
+	hardwareClient hardware.HardwareServiceClient
 )
 
 // Init initializes a gRPC connection with server
@@ -26,6 +28,7 @@ func Init() {
 		log.Fatal(err)
 	}
 	templateClient = template.NewTemplateClient(conn)
+	hardwareClient = hardware.NewHardwareServiceClient(conn)
 }
 
 // GetConnection returns a gRPC client connection
