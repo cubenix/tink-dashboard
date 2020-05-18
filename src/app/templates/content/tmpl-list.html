@@ -109,6 +109,8 @@
   <script type="text/javascript" src="/plugin/codemirror/lib/codemirror.js"></script>
   <script src="/plugin/codemirror/mode/yaml/yaml.js"></script>  
   <script>
+    updateNavbar("tmpl-list", "collapseTemplate");
+
     let orgData = "";
     function allowTemplateEdit() {
       orgData = $('#template-data').val();

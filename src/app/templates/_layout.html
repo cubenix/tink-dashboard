@@ -78,6 +78,13 @@
       $(alert).show();
       $(alert).delay(5000).hide('slow');
     }
+
+    function updateNavbar(id_selected, id_parent) {
+      $("#accordionSidebar>li.active").removeClass("active");
+      $("#"+id_selected).addClass("active");
+      $("#"+id_parent).addClass("show");
+      $("#"+id_parent).parent().addClass("active");
+    }
   </script>
 
   {{block "scripts" .}}{{end}}

@@ -122,6 +122,8 @@
   <script type="text/javascript" src="/plugin/codemirror/lib/codemirror.js"></script>
   <script src="/plugin/codemirror/mode/javascript/javascript.js"></script>  
   <script>
+    updateNavbar("hw-list", "collapseHardware");
+
     let orgData = "";
     function allowHardwareEdit() {
       orgData = $('#hardware-data').val();
