@@ -16,13 +16,27 @@ import (
 )
 
 type tmpl struct {
-	template *template.Template
+	templates map[string]*template.Template
 }
 
 func (t tmpl) registerRoutes() {
+	http.HandleFunc("/template/create", t.createTemplate)
+	http.HandleFunc("/template/upload", t.uploadTemplate)
 	http.HandleFunc("/template/list", t.listTemplates)
 	http.HandleFunc("/template", t.getTemplate)
 	http.HandleFunc("/template/update", t.updateTemplate)
+}
+
+func (t tmpl) createTemplate(w http.ResponseWriter, r *http.Request) {
+	data := types.Base{Title: "Templates"}
+	err := t.templates[create].Execute(w, data)
+	pkg.CheckError(err, errTemplateExecute)
+}
+
+func (t tmpl) uploadTemplate(w http.ResponseWriter, r *http.Request) {
+	data := types.Base{Title: "Templates"}
+	err := t.templates[upload].Execute(w, data)
+	pkg.CheckError(err, errTemplateExecute)
 }
 
 func (t tmpl) listTemplates(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +46,7 @@ func (t tmpl) listTemplates(w http.ResponseWriter, r *http.Request) {
 	}
 	tmplList := types.TemplateList{Templates: templates}
 	tmplList.Title = "Templates"
-	err = t.template.Execute(w, tmplList)
+	err = t.templates[list].Execute(w, tmplList)
 	pkg.CheckError(err, errTemplateExecute)
 }
 

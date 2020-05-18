@@ -16,13 +16,27 @@ import (
 )
 
 type hardware struct {
-	template *template.Template
+	templates map[string]*template.Template
 }
 
 func (h hardware) registerRoutes() {
+	http.HandleFunc("/hardware/create", h.createHardware)
+	http.HandleFunc("/hardware/upload", h.uploadHardware)
 	http.HandleFunc("/hardware/list", h.listHardware)
 	http.HandleFunc("/hardware", h.getHardware)
 	http.HandleFunc("/hardware/update", h.updateHardware)
+}
+
+func (h hardware) createHardware(w http.ResponseWriter, r *http.Request) {
+	data := types.Base{Title: "Hardwares"}
+	err := h.templates[create].Execute(w, data)
+	pkg.CheckError(err, errTemplateExecute)
+}
+
+func (h hardware) uploadHardware(w http.ResponseWriter, r *http.Request) {
+	data := types.Base{Title: "Hardwares"}
+	err := h.templates[upload].Execute(w, data)
+	pkg.CheckError(err, errTemplateExecute)
 }
 
 func (h hardware) listHardware(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +46,7 @@ func (h hardware) listHardware(w http.ResponseWriter, r *http.Request) {
 	}
 	tmplList := types.HardwareList{Hardwares: hardwares}
 	tmplList.Title = "Hardwares"
-	err = h.template.Execute(w, tmplList)
+	err = h.templates[list].Execute(w, tmplList)
 	pkg.CheckError(err, errTemplateExecute)
 }
 
