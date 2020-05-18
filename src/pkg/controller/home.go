@@ -13,17 +13,25 @@ const (
 )
 
 type home struct {
-	template *template.Template
+	templates map[string]*template.Template
 }
 
 func (h home) registerRoutes() {
 	http.HandleFunc("/", h.handleHome)
 	http.HandleFunc("/home", h.handleHome)
+	http.HandleFunc("/about", h.handleAbout)
 }
 
 func (h home) handleHome(w http.ResponseWriter, r *http.Request) {
-	data := types.Home{Message: "Hello World!"}
+	data := types.Home{}
 	data.Title = "Home"
-	err := h.template.Execute(w, data)
+	err := h.templates[index].Execute(w, data)
+	pkg.CheckError(err, errTemplateExecute)
+}
+
+func (h home) handleAbout(w http.ResponseWriter, r *http.Request) {
+	data := types.Home{}
+	data.Title = "About"
+	err := h.templates[about].Execute(w, data)
 	pkg.CheckError(err, errTemplateExecute)
 }
