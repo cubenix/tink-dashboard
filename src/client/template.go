@@ -11,27 +11,41 @@ import (
 	"github.com/tinkerbell/tink/protos/template"
 )
 
+var templateNames = make(map[string]string)
+
 // ListTemplates returns a list of workflow templates
 func ListTemplates(ctx context.Context) ([]types.Template, error) {
-	res, err := templateClient.ListTemplates(ctx, &template.Empty{})
-	if err != nil {
-		return nil, err
-	}
+	ch := make(chan *template.WorkflowTemplate)
+	go receiveTemplates(ctx, ch)
 
 	templates := []types.Template{}
-	var tmp *template.WorkflowTemplate
-	err = nil
-	for tmp, err = res.Recv(); err == nil && tmp.Name != ""; tmp, err = res.Recv() {
+	for tmp := range ch {
 		templates = append(templates, types.Template{
 			ID:          tmp.GetId(),
 			Name:        tmp.GetName(),
 			LastUpdated: time.Unix(tmp.UpdatedAt.Seconds, 0).Local().Format(time.UnixDate),
 		})
 	}
+	return templates, nil
+}
+
+func receiveTemplates(ctx context.Context, ch chan *template.WorkflowTemplate) {
+	defer close(ch)
+	res, err := templateClient.ListTemplates(ctx, &template.Empty{})
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	var tmp *template.WorkflowTemplate
+	err = nil
+	for tmp, err = res.Recv(); err == nil && tmp.Name != ""; tmp, err = res.Recv() {
+		ch <- tmp
+		// update templateNames
+		templateNames[tmp.Id] = tmp.Name
+	}
 	if err != nil && err != io.EOF {
 		log.Fatal(err)
 	}
-	return templates, nil
 }
 
 // GetTemplate returns details for the requested template ID
