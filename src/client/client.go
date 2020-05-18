@@ -11,6 +11,7 @@ import (
 
 	"github.com/tinkerbell/tink/protos/hardware"
 	"github.com/tinkerbell/tink/protos/template"
+	"github.com/tinkerbell/tink/protos/workflow"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -19,6 +20,7 @@ import (
 var (
 	templateClient template.TemplateClient
 	hardwareClient hardware.HardwareServiceClient
+	workflowClient workflow.WorkflowSvcClient
 )
 
 // Init initializes a gRPC connection with server
@@ -29,6 +31,7 @@ func Init() {
 	}
 	templateClient = template.NewTemplateClient(conn)
 	hardwareClient = hardware.NewHardwareServiceClient(conn)
+	workflowClient = workflow.NewWorkflowSvcClient(conn)
 }
 
 // GetConnection returns a gRPC client connection

@@ -9,4 +9,5 @@ require (
 	github.com/tidwall/pretty v1.0.1 // indirect
 	github.com/tinkerbell/tink v0.0.0-20200515095654-cc975d55b892
 	google.golang.org/grpc v1.28.1
+	gopkg.in/yaml.v2 v2.2.2
 )
