@@ -6,3 +6,10 @@
     </div>  
 
 {{end}}
+
+{{ define "scripts" }}
+    <script>
+        $("#accordionSidebar>li.active").removeClass("active");
+        $("#nav-about").addClass("active");
+    </script>
+{{ end }}
