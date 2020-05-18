@@ -40,15 +40,11 @@
                   <!-- Card Content - Collapse -->
                   <div class="collapse" id="hw-{{.ID}}" data-parent="#hardware-list">
                     <div class="card-body">
-                      <div>
-                        <strong>ID: </strong><span class="float-right">{{ .ID }}</span>
-                      </div>
-                      <div>
-                        <strong>MAC: </strong><span class="float-right">MAC Address</span>
-                      </div>
-                      <div>
-                        <strong>Class: </strong><span class="float-right">x86_64</span>
-                      </div>
+                      {{ range $key, $value := .Fields }}
+                        <div>
+                          <strong>{{ $key }}: </strong><span class="float-right">{{ $value }}</span>
+                        </div>
+                      {{ end }}
                     </div>
                   </div>
                 </div>

@@ -61,8 +61,8 @@ func getHardware(json string, setData bool) types.Hardware {
 		Fields: map[string]string{
 			"Architecture":   data.Get("arch").String(),
 			"Allow Workflow": data.Get("allow_workflow").String(),
-			"MAC":            data.Get("network_ports.1.data.mac").String(),
-			"Requested IP":   data.Get("ip_addresses.address").String(),
+			"MAC":            data.Get("network_ports.0.data.mac").String(),
+			"Requested IP":   data.Get("ip_addresses.0.address").String(),
 		},
 	}
 	if setData {
