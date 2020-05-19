@@ -41,7 +41,6 @@ func listWorkflowsFromServer(ctx context.Context) ([]types.Workflow, error) {
 	}
 	workflows := []types.Workflow{}
 	var wf *workflow.Workflow
-	err = nil
 	for wf, err = res.Recv(); err == nil && wf.Template != ""; wf, err = res.Recv() {
 		w, err := getWorkflow(ctx, wf.GetId())
 		if err == nil {
@@ -74,6 +73,7 @@ func getWorkflow(ctx context.Context, id string) (types.Workflow, error) {
 	t, _ := cache.Get(redis.CacheKeys.TemplateNames, w.GetTemplate())
 	json.Unmarshal([]byte(t), &wf.Template)
 	setNameAndTimeout(&wf)
+	cache.Set(redis.CacheKeys.Workflows, id, wf)
 	return wf, nil
 }
 

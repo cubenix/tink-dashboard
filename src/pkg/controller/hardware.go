@@ -80,7 +80,7 @@ func (h hardware) updateHardware(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
-	err := client.UpdateHardware(context.Background(), req.Data)
+	err := client.UpdateHardware(context.Background(), req.ID, req.Data)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, fmt.Sprintf("Failed to update hardware data. Error: %v", err), http.StatusNotFound)

@@ -39,7 +39,6 @@ func listTemplatesFromServer(ctx context.Context) ([]types.Template, error) {
 	}
 	templates := []types.Template{}
 	var tmp *template.WorkflowTemplate
-	err = nil
 	for tmp, err = res.Recv(); err == nil && tmp.Name != ""; tmp, err = res.Recv() {
 		data, err := getTemplateData(ctx, tmp.GetId())
 		if err == nil && data != nil {
