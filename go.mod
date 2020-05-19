@@ -3,6 +3,7 @@ module github.com/gauravgahlot/tink-wizard
 go 1.14
 
 require (
+	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/tidwall/gjson v1.6.0

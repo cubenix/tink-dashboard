@@ -11,6 +11,7 @@ import (
 	"github.com/gauravgahlot/tink-wizard/src/client"
 	"github.com/gauravgahlot/tink-wizard/src/pkg"
 	"github.com/gauravgahlot/tink-wizard/src/pkg/controller"
+	_ "github.com/gauravgahlot/tink-wizard/src/pkg/redis"
 )
 
 const (
