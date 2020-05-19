@@ -2,68 +2,106 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"time"
 
+	"github.com/gauravgahlot/tink-wizard/src/pkg/redis"
 	"github.com/gauravgahlot/tink-wizard/src/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/tinkerbell/tink/protos/template"
 )
 
-var templateNames = make(map[string]string)
-
 // ListTemplates returns a list of workflow templates
 func ListTemplates(ctx context.Context) ([]types.Template, error) {
-	ch := make(chan *template.WorkflowTemplate)
-	go receiveTemplates(ctx, ch)
-
+	tmpls, err := cache.GetAll(redis.CacheKeys.Templates)
+	if err != nil || tmpls == nil || len(tmpls) == 0 {
+		return listTemplatesFromServer(ctx)
+	}
 	templates := []types.Template{}
-	for tmp := range ch {
-		templates = append(templates, types.Template{
-			ID:          tmp.GetId(),
-			Name:        tmp.GetName(),
-			LastUpdated: time.Unix(tmp.UpdatedAt.Seconds, 0).Local().Format(time.UnixDate),
-		})
+	for id, tmpl := range tmpls {
+		var t types.Template
+		if err := json.Unmarshal([]byte(tmpl), &t); err != nil {
+			log.Error(err)
+			cache.Delete(redis.CacheKeys.Templates, id)
+			continue
+		}
+		templates = append(templates, t)
 	}
 	return templates, nil
 }
 
-func receiveTemplates(ctx context.Context, ch chan *template.WorkflowTemplate) {
-	defer close(ch)
+func listTemplatesFromServer(ctx context.Context) ([]types.Template, error) {
 	res, err := templateClient.ListTemplates(ctx, &template.Empty{})
 	if err != nil {
-		log.Error(err)
-		return
+		return nil, err
 	}
+	templates := []types.Template{}
 	var tmp *template.WorkflowTemplate
 	err = nil
 	for tmp, err = res.Recv(); err == nil && tmp.Name != ""; tmp, err = res.Recv() {
-		ch <- tmp
-		// update templateNames
-		templateNames[tmp.Id] = tmp.Name
+		data, err := getTemplateData(ctx, tmp.GetId())
+		if err == nil && data != nil {
+			t := types.Template{
+				ID:          tmp.GetId(),
+				Name:        tmp.GetName(),
+				Data:        string(data),
+				LastUpdated: time.Unix(tmp.UpdatedAt.Seconds, 0).Local().Format(time.UnixDate),
+			}
+			if err := cache.Set(redis.CacheKeys.Templates, t.ID, t); err != nil {
+				log.Error(err)
+			}
+			if err := cache.Set(redis.CacheKeys.TemplateNames, t.ID, t.Name); err != nil {
+				log.Error(err)
+			}
+			templates = append(templates, t)
+		}
 	}
 	if err != nil && err != io.EOF {
 		log.Fatal(err)
 	}
+	return templates, nil
+}
+
+func getTemplateData(ctx context.Context, id string) ([]byte, error) {
+	t, err := templateClient.GetTemplate(ctx, &template.GetRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+	if t.Data == nil {
+		return nil, fmt.Errorf("no data found for template ID: %v", id)
+	}
+	return t.GetData(), nil
 }
 
 // GetTemplate returns details for the requested template ID
 func GetTemplate(ctx context.Context, id string) (types.Template, error) {
+	result, err := cache.Get(redis.CacheKeys.Templates, id)
+	if err != nil || result == "" {
+		return getTemplateFromServer(ctx, id)
+	}
+	var tmpl types.Template
+	json.Unmarshal([]byte(result), &tmpl)
+	return tmpl, nil
+}
+
+func getTemplateFromServer(ctx context.Context, id string) (types.Template, error) {
 	t, err := templateClient.GetTemplate(ctx, &template.GetRequest{Id: id})
 	if err != nil {
 		return types.Template{}, err
 	}
-
 	if t.Data == nil {
 		return types.Template{}, fmt.Errorf("no data found for template ID: %v", id)
 	}
-
-	return types.Template{
-		ID:   t.GetId(),
-		Name: t.GetName(),
-		Data: string(t.GetData()),
-	}, nil
+	tmpl := types.Template{
+		ID:          t.GetId(),
+		Name:        t.GetName(),
+		Data:        string(t.GetData()),
+		LastUpdated: time.Unix(t.UpdatedAt.Seconds, 0).Local().Format(time.UnixDate),
+	}
+	cache.Set(redis.CacheKeys.Templates, id, tmpl)
+	return tmpl, nil
 }
 
 // UpdateTemplate updates the give template
@@ -72,5 +110,15 @@ func UpdateTemplate(ctx context.Context, id string, data string) error {
 		Id:   id,
 		Data: []byte(data),
 	})
-	return err
+	if err != nil {
+		return err
+	}
+	result, _ := cache.Get(redis.CacheKeys.Templates, id)
+	var tmpl types.Template
+	json.Unmarshal([]byte(result), &tmpl)
+	tmpl.Data = data
+	if err := cache.Set(redis.CacheKeys.Templates, id, tmpl); err != nil {
+		log.Error(err)
+	}
+	return nil
 }
