@@ -23,7 +23,7 @@ func ListHardwares(ctx context.Context) ([]types.Hardware, error) {
 	err = nil
 	for hw, err = res.Recv(); err == nil && hw.JSON != ""; hw, err = res.Recv() {
 		if err != nil {
-			log.Error("Invalid hardware data")
+			log.Error("invalid hardware data")
 			continue
 		}
 		// set custom fields here read from config.json
@@ -43,7 +43,7 @@ func GetHardware(ctx context.Context, id string) (types.Hardware, error) {
 		return types.Hardware{}, err
 	}
 	if t.JSON == "" {
-		return types.Hardware{}, fmt.Errorf("No data found of the hardware ID: %v", id)
+		return types.Hardware{}, fmt.Errorf("no data found for hardware ID: %v", id)
 	}
 	return getHardware(t.JSON, true), nil
 }

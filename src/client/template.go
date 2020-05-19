@@ -56,7 +56,7 @@ func GetTemplate(ctx context.Context, id string) (types.Template, error) {
 	}
 
 	if t.Data == nil {
-		return types.Template{}, fmt.Errorf("No data found of the template ID: %v", id)
+		return types.Template{}, fmt.Errorf("no data found for template ID: %v", id)
 	}
 
 	return types.Template{

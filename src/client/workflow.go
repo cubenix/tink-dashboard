@@ -9,7 +9,6 @@ import (
 
 	"github.com/gauravgahlot/tink-wizard/src/pkg/types"
 	log "github.com/sirupsen/logrus"
-	"github.com/tinkerbell/tink/protos/template"
 	"github.com/tinkerbell/tink/protos/workflow"
 	"gopkg.in/yaml.v2"
 )
@@ -20,10 +19,6 @@ func ListWorkflows(ctx context.Context) ([]types.Workflow, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// updated template names
-	updateTemplateNames(ctx)
-
 	workflows := []types.Workflow{}
 	var wf *workflow.Workflow
 	err = nil
@@ -45,7 +40,7 @@ func GetWorkflow(ctx context.Context, id string, fillDetails bool) (types.Workfl
 		return types.Workflow{}, err
 	}
 	if w.Data == "" {
-		return types.Workflow{}, fmt.Errorf("No data found for workflow ID: %v", id)
+		return types.Workflow{}, fmt.Errorf("no data found for workflow ID: %v", id)
 	}
 	wf := types.Workflow{
 		ID:       id,
@@ -66,12 +61,4 @@ func parseWorkflowYAML(data string) *types.WorkflowDetails {
 	var wf = types.WorkflowDetails{}
 	yaml.UnmarshalStrict([]byte(data), &wf)
 	return &wf
-}
-
-func updateTemplateNames(ctx context.Context) {
-	ch := make(chan *template.WorkflowTemplate)
-	go receiveTemplates(ctx, ch)
-	for len(ch) > 0 {
-		<-ch
-	}
 }
