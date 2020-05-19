@@ -1,13 +1,9 @@
 package controller
 
 import (
-	"context"
 	"html/template"
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
-
-	"github.com/gauravgahlot/tink-wizard/src/client"
 	"github.com/gauravgahlot/tink-wizard/src/pkg"
 	"github.com/gauravgahlot/tink-wizard/src/pkg/types"
 )
@@ -27,18 +23,9 @@ func (h home) registerRoutes() {
 }
 
 func (h home) handleHome(w http.ResponseWriter, r *http.Request) {
-	tmpls, err := client.ListTemplates(context.Background())
-	if err != nil {
-		log.Error(err)
-	}
-
-	for _, tmp := range tmpls {
-		log.Info(tmp.LastUpdated)
-	}
-
 	data := types.Home{}
 	data.Title = "Home"
-	err = h.templates[index].Execute(w, data)
+	err := h.templates[index].Execute(w, data)
 	pkg.CheckError(err, errTemplateExecute)
 }
 
