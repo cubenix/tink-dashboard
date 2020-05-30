@@ -37,6 +37,16 @@
     <div id="content-wrapper" class="d-flex flex-column">
         <!-- Main Content -->
         <div id="content">
+
+          <!-- Topbar -->
+          <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+            <!-- Sidebar Toggle (Topbar) -->
+            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+              <i class="fa fa-bars"></i>
+            </button>
+          </nav>
+          <!-- End of Topbar -->
+
           <!-- Begin Page Content -->
           <div class="container-fluid">            
             <!-- TODO: Remove the <br> tag  -->
@@ -45,7 +55,7 @@
             <!-- Alert -->
             <div id="alert" class="alert " role="alert">
             </div>
-
+        
             <!-- Render content from /templates/content/*.html -->
             {{template "content" .}}      
           </div>
@@ -84,6 +94,9 @@
       $("#"+id_selected).addClass("active");
       $("#"+id_parent).addClass("show");
       $("#"+id_parent).parent().addClass("active");
+      if (screen.width < 600 && performance.navigation.type == performance.navigation.TYPE_NAVIGATE) {
+        $("#"+id_parent).removeClass("show");
+      }
     }
   </script>
 
