@@ -21,6 +21,7 @@ type tmpl struct {
 
 func (t tmpl) registerRoutes() {
 	http.HandleFunc("/template/create", t.createTemplate)
+	http.HandleFunc("/template/new", t.createNewTemplate)
 	http.HandleFunc("/template/upload", t.uploadTemplate)
 	http.HandleFunc("/template/list", t.listTemplates)
 	http.HandleFunc("/template", t.getTemplate)
@@ -31,6 +32,24 @@ func (t tmpl) createTemplate(w http.ResponseWriter, r *http.Request) {
 	data := types.Base{Title: "Templates"}
 	err := t.templates[create].Execute(w, data)
 	pkg.CheckError(err, errTemplateExecute)
+}
+
+func (t tmpl) createNewTemplate(w http.ResponseWriter, r *http.Request) {
+	var req types.Template
+	decErr := json.NewDecoder(r.Body).Decode(&req)
+	if decErr != nil {
+		log.Errorf("bad request: ", decErr)
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	id, err := client.CreateNewTemplate(context.Background(), req.Name, req.Data)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	io.WriteString(w, id)
 }
 
 func (t tmpl) uploadTemplate(w http.ResponseWriter, r *http.Request) {
