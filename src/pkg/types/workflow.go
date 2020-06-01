@@ -47,3 +47,16 @@ type Action struct {
 	Volumes     []string          `yaml:"volumes,omitempty"`
 	Environment map[string]string `yaml:"environment,omitempty"`
 }
+
+// WorkflowDefinition defines the template data
+// and device keys for that workflow
+type WorkflowDefinition struct {
+	Data    string   `json:"data"`
+	Devices []string `json:"devices"`
+}
+
+// NewWorkflow represents a create new workflow request
+type NewWorkflow struct {
+	TemplateID string            `json:"templateID"`
+	Devices    map[string]string `json:"devices"`
+}

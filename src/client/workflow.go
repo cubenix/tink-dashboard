@@ -34,6 +34,46 @@ func ListWorkflows(ctx context.Context) ([]types.Workflow, error) {
 	return workflows, nil
 }
 
+// GetWorkflow returns details for the requested workflow ID
+func GetWorkflow(ctx context.Context, id string, fillDetails bool) (types.Workflow, error) {
+	result, err := cache.Get(redis.CacheKeys.Workflows, id)
+	if err != nil || result == "" {
+		wf, err := getWorkflow(ctx, id)
+		if err != nil {
+			return types.Workflow{}, err
+		}
+		if fillDetails {
+			wf.Details = *parseWorkflowYAML(wf.RawData)
+		}
+		return wf, nil
+	}
+
+	var wf types.Workflow
+	json.Unmarshal([]byte(result), &wf)
+	if fillDetails {
+		wf.Details = *parseWorkflowYAML(wf.RawData)
+	}
+	return wf, nil
+}
+
+// ParseWorkflowTemplate parses a template into workflow details
+func ParseWorkflowTemplate(data string) *types.WorkflowDetails {
+	return parseWorkflowYAML(data)
+}
+
+// CreateNewWorkflow creates a new workflow with
+// selected template and hardware devices
+func CreateNewWorkflow(ctx context.Context, templateID string, hardware string) (string, error) {
+	res, err := workflowClient.CreateWorkflow(ctx, &workflow.CreateRequest{
+		Template: templateID,
+		Hardware: hardware,
+	})
+	if err != nil {
+		return "", err
+	}
+	return res.Id, nil
+}
+
 func listWorkflowsFromServer(ctx context.Context) ([]types.Workflow, error) {
 	res, err := workflowClient.ListWorkflows(ctx, &workflow.Empty{})
 	if err != nil {
@@ -81,28 +121,6 @@ func setNameAndTimeout(wf *types.Workflow) {
 	details := *parseWorkflowYAML(wf.RawData)
 	wf.Name = details.Name
 	wf.Timeout = strconv.Itoa(details.GlobalTimeout)
-}
-
-// GetWorkflow returns details for the requested workflow ID
-func GetWorkflow(ctx context.Context, id string, fillDetails bool) (types.Workflow, error) {
-	result, err := cache.Get(redis.CacheKeys.Workflows, id)
-	if err != nil || result == "" {
-		wf, err := getWorkflow(ctx, id)
-		if err != nil {
-			return types.Workflow{}, err
-		}
-		if fillDetails {
-			wf.Details = *parseWorkflowYAML(wf.RawData)
-		}
-		return wf, nil
-	}
-
-	var wf types.Workflow
-	json.Unmarshal([]byte(result), &wf)
-	if fillDetails {
-		wf.Details = *parseWorkflowYAML(wf.RawData)
-	}
-	return wf, nil
 }
 
 func parseWorkflowYAML(data string) *types.WorkflowDetails {
