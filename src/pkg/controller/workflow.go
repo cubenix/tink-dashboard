@@ -43,7 +43,7 @@ func (wf workflow) createNewWorkflow(w http.ResponseWriter, r *http.Request) {
 	var req types.NewWorkflow
 	decErr := json.NewDecoder(r.Body).Decode(&req)
 	if decErr != nil {
-		log.Errorf("bad request: ", decErr)
+		log.Errorf("bad request: %v", decErr)
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
@@ -70,7 +70,7 @@ func (wf workflow) defineWorkflowTemplateAndDevices(w http.ResponseWriter, r *ht
 	var req types.Get
 	decErr := json.NewDecoder(r.Body).Decode(&req)
 	if decErr != nil {
-		log.Errorf("bad request: ", decErr)
+		log.Errorf("bad request: %v", decErr)
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
@@ -99,7 +99,7 @@ func (wf workflow) getWorkflow(w http.ResponseWriter, r *http.Request) {
 	var req types.Get
 	decErr := json.NewDecoder(r.Body).Decode(&req)
 	if decErr != nil {
-		log.Errorf("bad request: ", decErr)
+		log.Errorf("bad request: %v", decErr)
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}

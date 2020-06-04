@@ -59,7 +59,7 @@ func (h hardware) getHardware(w http.ResponseWriter, r *http.Request) {
 	var req types.Get
 	decErr := json.NewDecoder(r.Body).Decode(&req)
 	if decErr != nil {
-		log.Errorf("bad request: ", decErr)
+		log.Errorf("bad request: %v", decErr)
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
@@ -76,7 +76,7 @@ func (h hardware) updateHardware(w http.ResponseWriter, r *http.Request) {
 	var req types.UpdateTemplate
 	decErr := json.NewDecoder(r.Body).Decode(&req)
 	if decErr != nil {
-		log.Errorf("bad request: ", decErr)
+		log.Errorf("bad request: %v", decErr)
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
