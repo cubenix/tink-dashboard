@@ -6,7 +6,4 @@ EXPOSE 7676
 COPY src/app/templates /src/app/templates
 COPY src/app/public /src/app/public
 
-RUN apk add --update ca-certificates && \
-    apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing cfssl
-
 COPY server /bin/
