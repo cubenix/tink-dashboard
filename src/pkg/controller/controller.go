@@ -66,6 +66,8 @@ func Startup(templates map[string]*template.Template) {
 	}
 	workflowController.registerRoutes()
 
+	http.Handle("/css/", http.FileServer(http.Dir(publicDir)))
+	http.Handle("/js/", http.FileServer(http.Dir(publicDir)))
 	http.Handle("/img/", http.FileServer(http.Dir(publicDir)))
 	http.Handle("/plugin/", http.FileServer(http.Dir(publicDir)))
 }
