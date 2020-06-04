@@ -1,0 +1,31 @@
+name: CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+      GOPATH: /home/runner/work/tink-wizard
+      GOBIN: /home/runner/work/tink-wizard/bin
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.14
+    - name: Install golint
+      run: |
+        go get -u golang.org/x/lint/golint
+    - name: Before build
+      run: |
+        ./hack/verify-gofmt.sh
+        ./hack/verify-govet.sh
+        ./hack/verify-golint.sh
+        go mod verify
+    - name: Build
+      run: make build
