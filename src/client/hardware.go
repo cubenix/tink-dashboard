@@ -13,6 +13,17 @@ import (
 	"github.com/tinkerbell/tink/protos/hardware"
 )
 
+// CreateNewHardware creates a new workflow template
+func CreateNewHardware(ctx context.Context, data string) (string, error) {
+	_, err := hardwareClient.Push(ctx, &hardware.PushRequest{Data: data})
+	if err != nil {
+		return "", err
+	}
+	h := fillHardwareFromJSON(data)
+	cache.Set(redis.CacheKeys.Hardwares, h.ID, h)
+	return h.ID, nil
+}
+
 // ListHardwares returns a list of workflow hardwares
 func ListHardwares(ctx context.Context) ([]types.Hardware, error) {
 	hws, err := cache.GetAll(redis.CacheKeys.Hardwares)
@@ -31,6 +42,33 @@ func ListHardwares(ctx context.Context) ([]types.Hardware, error) {
 		hardwares = append(hardwares, h)
 	}
 	return hardwares, nil
+}
+
+// GetHardware returns details for the requested hardware ID
+func GetHardware(ctx context.Context, id string) (types.Hardware, error) {
+	result, err := cache.Get(redis.CacheKeys.Hardwares, id)
+	if err != nil || result == "" {
+		return getHardwareFromServer(ctx, id)
+	}
+	var hw types.Hardware
+	json.Unmarshal([]byte(result), &hw)
+	return hw, nil
+}
+
+// UpdateHardware updates the give hardware
+func UpdateHardware(ctx context.Context, id string, data string) error {
+	_, err := hardwareClient.Push(ctx, &hardware.PushRequest{Data: data})
+	if err != nil {
+		return err
+	}
+	result, _ := cache.Get(redis.CacheKeys.Hardwares, id)
+	var hw types.Hardware
+	json.Unmarshal([]byte(result), &hw)
+	hw.Data = data
+	if err := cache.Set(redis.CacheKeys.Hardwares, id, data); err != nil {
+		log.Error(err)
+	}
+	return nil
 }
 
 func listHardwaresFromServer(ctx context.Context) ([]types.Hardware, error) {
@@ -55,17 +93,6 @@ func listHardwaresFromServer(ctx context.Context) ([]types.Hardware, error) {
 	return hardwares, nil
 }
 
-// GetHardware returns details for the requested hardware ID
-func GetHardware(ctx context.Context, id string) (types.Hardware, error) {
-	result, err := cache.Get(redis.CacheKeys.Hardwares, id)
-	if err != nil || result == "" {
-		return getHardwareFromServer(ctx, id)
-	}
-	var hw types.Hardware
-	json.Unmarshal([]byte(result), &hw)
-	return hw, nil
-}
-
 func getHardwareFromServer(ctx context.Context, id string) (types.Hardware, error) {
 	h, err := hardwareClient.ByID(ctx, &hardware.GetRequest{ID: id})
 	if err != nil {
@@ -77,22 +104,6 @@ func getHardwareFromServer(ctx context.Context, id string) (types.Hardware, erro
 	hw := fillHardwareFromJSON(h.JSON)
 	cache.Set(redis.CacheKeys.Hardwares, id, hw)
 	return hw, nil
-}
-
-// UpdateHardware updates the give hardware
-func UpdateHardware(ctx context.Context, id string, data string) error {
-	_, err := hardwareClient.Push(ctx, &hardware.PushRequest{Data: data})
-	if err != nil {
-		return err
-	}
-	result, _ := cache.Get(redis.CacheKeys.Hardwares, id)
-	var hw types.Hardware
-	json.Unmarshal([]byte(result), &hw)
-	hw.Data = data
-	if err := cache.Set(redis.CacheKeys.Hardwares, id, data); err != nil {
-		log.Error(err)
-	}
-	return nil
 }
 
 func fillHardwareFromJSON(json string) types.Hardware {
