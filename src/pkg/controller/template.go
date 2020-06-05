@@ -38,7 +38,7 @@ func (t tmpl) createNewTemplate(w http.ResponseWriter, r *http.Request) {
 	var req types.Template
 	decErr := json.NewDecoder(r.Body).Decode(&req)
 	if decErr != nil {
-		log.Errorf("bad request: ", decErr)
+		log.Errorf("bad request: %v", decErr)
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}

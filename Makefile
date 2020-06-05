@@ -29,8 +29,7 @@ redis:
 	-p 6379:6379 \
 	redis:alpine redis-server --appendonly yes
 
-run:
-	docker run -d \
+run: build
 	--network ${TINKERBELL_NETWORK} \
 	-e ALLOW_INSECURE=${ALLOW_INSECURE} \
 	-e TINKERBELL_GRPC_AUTHORITY=${TINKERBELL_HOST}:42113 \
