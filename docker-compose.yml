@@ -1,0 +1,15 @@
+version: '2.0'
+services:
+  tink-worker:
+    build: .
+    ports:
+      - 7676:7676
+    environment:
+      - ALLOW_INSECURE=true
+      - TINKERBELL_GRPC_AUTHORITY=$TINKERBELL_HOST_IP:42113
+      - TINKERBELL_CERT_URL=http://$TINKERBELL_HOST_IP:42114/cert
+      - REDIS_ADDRESS=redis:6379
+    links:
+      - redis
+  redis:
+    image: redis:6.0-buster
