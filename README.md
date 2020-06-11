@@ -1,9 +1,9 @@
-# tink-wizard 
+# portal
 
 ![CI](https://github.com/gauravgahlot/tink-wizard/workflows/CI/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gauravgahlot/tink-wizard)](https://goreportcard.com/report/github.com/gauravgahlot/tink-wizard)
 
-Tink-Wizard is a general-purpose web UI for Tinkerbell.
+This repository contains a general-purpose web UI for Tinkerbell.
 It allows you to manage your hardware, template, and workflows from a single place.
 
 ## Prerequisite
