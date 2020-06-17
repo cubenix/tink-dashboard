@@ -14,7 +14,7 @@ It allows you to manage your hardware, template, and workflows from a single pla
 ### Clone the repository with:
 
 ```
-$ git clone https://github.com/gauravgahlot/tink-wizard.git && cd tink-wizard
+$ git clone https://github.com/tinkerbell/portal.git && cd portal
 ```
 
 ### Environment settings
@@ -36,3 +36,8 @@ $ make certs
 $ make redis && make run
 ```
  - You can now access tink-wizard at [http://localhost:7676](http://localhost:7676) or [https://localhost:7676](https://localhost:7676).
+ 
+ ### Resources
+ 
+  - [Introducing Tink-Wizard - A general purpose Web UI to manage your Tinkerbell workflows
+](https://www.youtube.com/watch?v=SLshLxNvgC0&feature=youtu.be)
