@@ -4,9 +4,14 @@
 .git
 .gitignore
 .gitattributes
+.editorconfig
+.env
+Makefile
 *.md
 !README.md
 Dockerfile
+.github/
 sample-data/
 tls/
-
+redis-data/
+hack/

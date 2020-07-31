@@ -21,6 +21,7 @@ type hardware struct {
 
 func (h hardware) registerRoutes() {
 	http.HandleFunc("/hardware/create", h.createHardware)
+	http.HandleFunc("/hardware/new", h.createNewHardware)
 	http.HandleFunc("/hardware/upload", h.uploadHardware)
 	http.HandleFunc("/hardware/list", h.listHardware)
 	http.HandleFunc("/hardware", h.getHardware)
@@ -31,6 +32,24 @@ func (h hardware) createHardware(w http.ResponseWriter, r *http.Request) {
 	data := types.Base{Title: "Hardwares"}
 	err := h.templates[create].Execute(w, data)
 	pkg.CheckError(err, errTemplateExecute)
+}
+
+func (h hardware) createNewHardware(w http.ResponseWriter, r *http.Request) {
+	var req types.Hardware
+	decErr := json.NewDecoder(r.Body).Decode(&req)
+	if decErr != nil {
+		log.Errorf("bad request: %v", decErr)
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	id, err := client.CreateNewHardware(context.Background(), req.Data)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	io.WriteString(w, id)
 }
 
 func (h hardware) uploadHardware(w http.ResponseWriter, r *http.Request) {
