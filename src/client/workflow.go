@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strconv"
 	"time"
 
 	"github.com/gauravgahlot/tink-wizard/src/pkg/redis"
@@ -120,7 +119,6 @@ func getWorkflow(ctx context.Context, id string) (types.Workflow, error) {
 func setNameAndTimeout(wf *types.Workflow) {
 	details := *parseWorkflowYAML(wf.RawData)
 	wf.Name = details.Name
-	wf.Timeout = strconv.Itoa(details.GlobalTimeout)
 }
 
 func parseWorkflowYAML(data string) *types.WorkflowDetails {

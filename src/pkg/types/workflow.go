@@ -23,7 +23,6 @@ type WorkflowDetails struct {
 	Version       string `yaml:"version"`
 	Name          string `yaml:"name"`
 	ID            string `yaml:"id"`
-	GlobalTimeout int    `yaml:"global_timeout"`
 	Tasks         []Task `yaml:"tasks"`
 }
 
