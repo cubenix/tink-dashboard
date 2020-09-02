@@ -13,7 +13,8 @@ This repository is Experimental meaning that it's based on untested ideas or tec
 This means that support is best effort (at best!) and we strongly encourage you to NOT use this in production.
 
 ## Prerequisite
- - You have already setup the Tinkerbell stack (the provisioner, as we generally know it).
+
+-   You have already setup the Tinkerbell stack (the provisioner, as we generally know it).
 
 ## Get Started
 
@@ -25,25 +26,28 @@ $ git clone https://github.com/tinkerbell/portal.git && cd portal
 
 ### Environment settings
 
- - Update the `.env` file as per your environment setup.
- - If you plan to use TLS with tink-wizard, set `ALLOW_INSECURE` to `false`. Default is `true`.
- 
-### Starting server 
+-   Update the `.env` file as per your environment setup.
+-   If you plan to use TLS with tink-wizard, set `ALLOW_INSECURE` to `false`. Default is `true`.
 
- - In order to host a secure server, please update the CA and server configuration in respective files under `/tls`.
- - However, the definitions are preset to give you a quick start with `localhost`.
- - Once you have updated the `/tls` definitions, you can generate the certificate with:
+### Starting server
+
+-   In order to host a secure server, please update the CA and server configuration in respective files under `/tls`.
+-   However, the definitions are preset to give you a quick start with `localhost`.
+-   Once you have updated the `/tls` definitions, you can generate the certificate with:
+
 ```
 $ make certs
 ```
 
- - You can now start the server by executing the following:
+-   You can now start the server by executing the following:
+
 ```
 $ make redis && make run
 ```
- - You can now access tink-wizard at [http://localhost:7676](http://localhost:7676) or [https://localhost:7676](https://localhost:7676).
- 
- ### Resources
- 
-  - [Introducing Tink-Wizard - A general purpose Web UI to manage your Tinkerbell workflows
-](https://www.youtube.com/watch?v=SLshLxNvgC0&feature=youtu.be)
+
+-   You can now access tink-wizard at [http://localhost:7676](http://localhost:7676) or [https://localhost:7676](https://localhost:7676).
+
+### Resources
+
+-   [Introducing Tink-Wizard - A general purpose Web UI to manage your Tinkerbell workflows
+    ](https://www.youtube.com/watch?v=SLshLxNvgC0&feature=youtu.be)
