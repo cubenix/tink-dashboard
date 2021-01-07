@@ -8,10 +8,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/gauravgahlot/tink-wizard/src/client"
-	"github.com/gauravgahlot/tink-wizard/src/pkg"
-	"github.com/gauravgahlot/tink-wizard/src/pkg/controller"
-	_ "github.com/gauravgahlot/tink-wizard/src/pkg/redis"
+	"github.com/tinkerbell/portal/src/client"
+	"github.com/tinkerbell/portal/src/pkg"
+	"github.com/tinkerbell/portal/src/pkg/controller"
+	_ "github.com/tinkerbell/portal/src/pkg/redis"
 )
 
 const (

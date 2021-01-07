@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/gauravgahlot/tink-wizard/src/pkg/redis"
-	"github.com/gauravgahlot/tink-wizard/src/pkg/types"
 	log "github.com/sirupsen/logrus"
-	"github.com/tidwall/gjson"
+	"github.com/tinkerbell/portal/src/pkg/redis"
+	"github.com/tinkerbell/portal/src/pkg/types"
+	"github.com/tinkerbell/tink/pkg"
 	"github.com/tinkerbell/tink/protos/hardware"
 )
 
@@ -22,7 +22,7 @@ func CreateNewHardware(ctx context.Context, data string) (string, error) {
 	h := fillHardwareFromJSON(data)
 	cache.Set(redis.CacheKeys.Hardwares, h.ID, h)
 	return h.ID, nil
-}
+	}
 
 // ListHardwares returns a list of workflow hardwares
 func ListHardwares(ctx context.Context) ([]types.Hardware, error) {
