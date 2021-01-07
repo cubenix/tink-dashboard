@@ -21,9 +21,9 @@ import (
 var (
 	cache *redis.Cache
 
-	templateClient template.TemplateClient
+	templateClient template.TemplateServiceClient
 	hardwareClient hardware.HardwareServiceClient
-	workflowClient workflow.WorkflowSvcClient
+	workflowClient workflow.WorkflowServiceClient
 )
 
 // Init initializes a gRPC connection with server
@@ -32,9 +32,9 @@ func Init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	templateClient = template.NewTemplateClient(conn)
+	templateClient = template.NewTemplateServiceClient(conn)
 	hardwareClient = hardware.NewHardwareServiceClient(conn)
-	workflowClient = workflow.NewWorkflowSvcClient(conn)
+	workflowClient = workflow.NewWorkflowServiceClient(conn)
 }
 
 // GetConnection returns a gRPC client connection
