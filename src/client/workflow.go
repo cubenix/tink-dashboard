@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gauravgahlot/tink-wizard/src/pkg/redis"
-	"github.com/gauravgahlot/tink-wizard/src/pkg/types"
 	log "github.com/sirupsen/logrus"
+	"github.com/tinkerbell/portal/src/pkg/redis"
+	"github.com/tinkerbell/portal/src/pkg/types"
 	"github.com/tinkerbell/tink/protos/workflow"
 	"gopkg.in/yaml.v2"
 )

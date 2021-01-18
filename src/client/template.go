@@ -7,9 +7,9 @@ import (
 	"io"
 	"time"
 
-	"github.com/gauravgahlot/tink-wizard/src/pkg/redis"
-	"github.com/gauravgahlot/tink-wizard/src/pkg/types"
 	log "github.com/sirupsen/logrus"
+	"github.com/tinkerbell/portal/src/pkg/redis"
+	"github.com/tinkerbell/portal/src/pkg/types"
 	"github.com/tinkerbell/tink/protos/template"
 )
 
@@ -17,7 +17,7 @@ import (
 func CreateNewTemplate(ctx context.Context, name, data string) (string, error) {
 	res, err := templateClient.CreateTemplate(ctx, &template.WorkflowTemplate{
 		Name: name,
-		Data: []byte(data),
+		Data: data,
 	})
 	if err != nil {
 		return "", err
@@ -65,7 +65,7 @@ func GetTemplate(ctx context.Context, id string) (types.Template, error) {
 func UpdateTemplate(ctx context.Context, id string, data string) error {
 	_, err := templateClient.UpdateTemplate(ctx, &template.WorkflowTemplate{
 		Id:   id,
-		Data: []byte(data),
+		Data: data,
 	})
 	if err != nil {
 		return err
@@ -81,7 +81,11 @@ func UpdateTemplate(ctx context.Context, id string, data string) error {
 }
 
 func listTemplatesFromServer(ctx context.Context) ([]types.Template, error) {
-	res, err := templateClient.ListTemplates(ctx, &template.Empty{})
+	res, err := templateClient.ListTemplates(ctx, &template.ListRequest{
+		FilterBy: &template.ListRequest_Name{
+			Name: "*",
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -89,11 +93,11 @@ func listTemplatesFromServer(ctx context.Context) ([]types.Template, error) {
 	var tmp *template.WorkflowTemplate
 	for tmp, err = res.Recv(); err == nil && tmp.Name != ""; tmp, err = res.Recv() {
 		data, err := getTemplateData(ctx, tmp.GetId())
-		if err == nil && data != nil {
+		if err == nil && data != "" {
 			t := types.Template{
 				ID:          tmp.GetId(),
 				Name:        tmp.GetName(),
-				Data:        string(data),
+				Data:        data,
 				LastUpdated: time.Unix(tmp.UpdatedAt.Seconds, 0).Local().Format(time.UnixDate),
 			}
 			if err := cache.Set(redis.CacheKeys.Templates, t.ID, t); err != nil {
@@ -111,30 +115,29 @@ func listTemplatesFromServer(ctx context.Context) ([]types.Template, error) {
 	return templates, nil
 }
 
-func getTemplateData(ctx context.Context, id string) ([]byte, error) {
-	t, err := templateClient.GetTemplate(ctx, &template.GetRequest{Id: id})
+func getTemplateData(ctx context.Context, id string) (string, error) {
+	t, err := templateClient.GetTemplate(ctx, &template.GetRequest{GetBy: &template.GetRequest_Id{Id: id}})
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	if t.Data == nil {
-		return nil, fmt.Errorf("no data found for template ID: %v", id)
+	if t.Data == "" {
+		return "", fmt.Errorf("no data found for template ID: %v", id)
 	}
 	return t.GetData(), nil
 }
 
 func getTemplateFromServer(ctx context.Context, id string) (types.Template, error) {
-	t, err := templateClient.GetTemplate(ctx, &template.GetRequest{Id: id})
+	t, err := templateClient.GetTemplate(ctx, &template.GetRequest{GetBy: &template.GetRequest_Id{Id: id}})
 	if err != nil {
 		return types.Template{}, err
 	}
-	if t.Data == nil {
+	if t.Data == "" {
 		return types.Template{}, fmt.Errorf("no data found for template ID: %v", id)
 	}
 	tmpl := types.Template{
-		ID:          t.GetId(),
-		Name:        t.GetName(),
-		Data:        string(t.GetData()),
-		LastUpdated: time.Unix(t.UpdatedAt.Seconds, 0).Local().Format(time.UnixDate),
+		ID:   t.GetId(),
+		Name: t.GetName(),
+		Data: t.GetData(),
 	}
 	cache.Set(redis.CacheKeys.Templates, id, tmpl)
 	return tmpl, nil
