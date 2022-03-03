@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/gauravgahlot/tinkerbell-dashboard/src/pkg/redis"
+	"github.com/gauravgahlot/tinkerbell-dashboard/src/pkg/types"
 	log "github.com/sirupsen/logrus"
-	"github.com/tinkerbell/portal/src/pkg/redis"
-	"github.com/tinkerbell/portal/src/pkg/types"
 	"github.com/tinkerbell/tink/pkg"
 	"github.com/tinkerbell/tink/protos/hardware"
 )

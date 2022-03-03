@@ -10,9 +10,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/tinkerbell/portal/src/client"
-	"github.com/tinkerbell/portal/src/pkg"
-	"github.com/tinkerbell/portal/src/pkg/types"
+	"github.com/gauravgahlot/tinkerbell-dashboard/src/client"
+	"github.com/gauravgahlot/tinkerbell-dashboard/src/pkg"
+	"github.com/gauravgahlot/tinkerbell-dashboard/src/pkg/types"
 )
 
 type hardware struct {
