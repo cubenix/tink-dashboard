@@ -11,9 +11,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/tinkerbell/portal/src/client"
-	"github.com/tinkerbell/portal/src/pkg"
-	"github.com/tinkerbell/portal/src/pkg/types"
+	"github.com/gauravgahlot/tink-dashboard/src/client"
+	"github.com/gauravgahlot/tink-dashboard/src/pkg"
+	"github.com/gauravgahlot/tink-dashboard/src/pkg/types"
 )
 
 type workflow struct {

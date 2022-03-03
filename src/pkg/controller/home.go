@@ -4,8 +4,8 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/tinkerbell/portal/src/pkg"
-	"github.com/tinkerbell/portal/src/pkg/types"
+	"github.com/gauravgahlot/tink-dashboard/src/pkg"
+	"github.com/gauravgahlot/tink-dashboard/src/pkg/types"
 )
 
 const (

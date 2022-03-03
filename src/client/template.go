@@ -7,9 +7,9 @@ import (
 	"io"
 	"time"
 
+	"github.com/gauravgahlot/tink-dashboard/src/pkg/redis"
+	"github.com/gauravgahlot/tink-dashboard/src/pkg/types"
 	log "github.com/sirupsen/logrus"
-	"github.com/tinkerbell/portal/src/pkg/redis"
-	"github.com/tinkerbell/portal/src/pkg/types"
 	"github.com/tinkerbell/tink/protos/template"
 )
 
