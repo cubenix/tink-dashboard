@@ -3,4 +3,3 @@ server
 .DS_Store
 .idea
 .vscode
-redis-data

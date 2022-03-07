@@ -3,7 +3,6 @@ module github.com/gauravgahlot/tink-dashboard
 go 1.17
 
 require (
-	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/tinkerbell/tink v0.6.0

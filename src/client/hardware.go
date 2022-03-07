@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/gauravgahlot/tink-dashboard/src/pkg/redis"
 	"github.com/gauravgahlot/tink-dashboard/src/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/tinkerbell/tink/pkg"
@@ -28,42 +27,18 @@ func CreateNewHardware(ctx context.Context, data string) (string, error) {
 	}
 
 	hardware := fillHardwareFromWrapper(&hw)
-	if err := cache.Set(redis.CacheKeys.Hardwares, hardware.ID, hardware); err != nil {
-		return "", err
-	}
+
 	return hardware.ID, nil
 }
 
 // ListHardwares returns a list of workflow hardwares
 func ListHardwares(ctx context.Context) ([]types.Hardware, error) {
-	hws, err := cache.GetAll(redis.CacheKeys.Hardwares)
-	if err != nil || hws == nil || len(hws) == 0 {
-		return listHardwaresFromServer(ctx)
-	}
-
-	hardwares := []types.Hardware{}
-	for id, hw := range hws {
-		var h types.Hardware
-		if err := json.Unmarshal([]byte(hw), &h); err != nil {
-			log.Error(err)
-			cache.Delete(redis.CacheKeys.Hardwares, id)
-			continue
-		}
-
-		hardwares = append(hardwares, h)
-	}
-	return hardwares, nil
+	return listHardwaresFromServer(ctx)
 }
 
 // GetHardware returns details for the requested hardware ID
 func GetHardware(ctx context.Context, id string) (types.Hardware, error) {
-	result, err := cache.Get(redis.CacheKeys.Hardwares, id)
-	if err != nil || result == "" {
-		return getHardwareFromServer(ctx, id)
-	}
-	var hw types.Hardware
-	json.Unmarshal([]byte(result), &hw)
-	return hw, nil
+	return getHardwareFromServer(ctx, id)
 }
 
 // UpdateHardware updates the given workflow hardware configuration
@@ -79,10 +54,6 @@ func UpdateHardware(ctx context.Context, id string, data string) error {
 		return err
 	}
 
-	hardware := fillHardwareFromWrapper(&hw)
-	if err := cache.Set(redis.CacheKeys.Hardwares, id, hardware); err != nil {
-		log.Error(err)
-	}
 	return nil
 }
 
@@ -91,6 +62,7 @@ func listHardwaresFromServer(ctx context.Context) ([]types.Hardware, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	// use HardwareWrapper for adapted json marshal/unmarshal code
 	var hw pkg.HardwareWrapper
 	hardwares := []types.Hardware{}
@@ -99,13 +71,15 @@ func listHardwaresFromServer(ctx context.Context) ([]types.Hardware, error) {
 			log.Error("error receiving hardware data")
 			continue
 		}
+
 		h := fillHardwareFromWrapper(&hw)
-		cache.Set(redis.CacheKeys.Hardwares, h.ID, h)
 		hardwares = append(hardwares, h)
 	}
+
 	if err != nil && err != io.EOF {
 		log.Fatal(err)
 	}
+
 	return hardwares, nil
 }
 
@@ -113,6 +87,7 @@ func getHardwareFromServer(ctx context.Context, id string) (types.Hardware, erro
 	// use HardwareWrapper for adapted json marshal/unmarshal code
 	var h pkg.HardwareWrapper
 	var err error
+
 	h.Hardware, err = hardwareClient.ByID(ctx, &hardware.GetRequest{Id: id})
 	if err != nil {
 		return types.Hardware{}, err
@@ -120,8 +95,8 @@ func getHardwareFromServer(ctx context.Context, id string) (types.Hardware, erro
 	if h.Hardware == nil {
 		return types.Hardware{}, fmt.Errorf("no data found for hardware ID: %v", id)
 	}
+
 	hw := fillHardwareFromWrapper(&h)
-	cache.Set(redis.CacheKeys.Hardwares, id, hw)
 	return hw, nil
 }
 

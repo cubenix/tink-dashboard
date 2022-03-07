@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gauravgahlot/tink-dashboard/src/pkg/redis"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
@@ -19,8 +18,6 @@ import (
 
 // gRPC clients
 var (
-	cache *redis.Cache
-
 	templateClient template.TemplateServiceClient
 	hardwareClient hardware.HardwareServiceClient
 	workflowClient workflow.WorkflowServiceClient
@@ -70,8 +67,4 @@ func getConnection() (*grpc.ClientConn, error) {
 		return nil, errors.Wrap(err, "connect to tinkerbell server")
 	}
 	return conn, nil
-}
-
-func init() {
-	cache = redis.Instance()
 }

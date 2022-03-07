@@ -11,7 +11,6 @@ import (
 	"github.com/gauravgahlot/tink-dashboard/src/client"
 	"github.com/gauravgahlot/tink-dashboard/src/pkg"
 	"github.com/gauravgahlot/tink-dashboard/src/pkg/controller"
-	_ "github.com/gauravgahlot/tink-dashboard/src/pkg/redis"
 )
 
 const (

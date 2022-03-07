@@ -41,7 +41,7 @@ $ make certs
 -   You can now start the server by executing the following:
 
 ```
-$ make redis && make run
+$ make run
 ```
 
 -   You can now access tink-wizard at [http://localhost:7676](http://localhost:7676) or [https://localhost:7676](https://localhost:7676).

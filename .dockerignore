@@ -13,5 +13,4 @@ Dockerfile
 .github/
 sample-data/
 tls/
-redis-data/
 hack/
