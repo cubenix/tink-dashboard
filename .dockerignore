@@ -6,7 +6,6 @@
 .gitattributes
 .editorconfig
 .env
-Makefile
 *.md
 !README.md
 Dockerfile
