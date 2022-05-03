@@ -21,35 +21,35 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
-
 	"github.com/tinkerbell/tink/protos/hardware"
 	"github.com/tinkerbell/tink/protos/template"
 	"github.com/tinkerbell/tink/protos/workflow"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
 
-// gRPC clients
-var (
-	templateClient template.TemplateServiceClient
-	hardwareClient hardware.HardwareServiceClient
-	workflowClient workflow.WorkflowServiceClient
-)
-
-// Init initializes a gRPC connection with server
-func Init() {
-	conn, err := getConnection()
-	if err != nil {
-		log.Fatal().Err(err)
-	}
-
-	templateClient = template.NewTemplateServiceClient(conn)
-	hardwareClient = hardware.NewHardwareServiceClient(conn)
-	workflowClient = workflow.NewWorkflowServiceClient(conn)
+type Client struct {
+	template template.TemplateServiceClient
+	hardware hardware.HardwareServiceClient
+	workflow workflow.WorkflowServiceClient
 }
 
-// GetConnection returns a gRPC client connection
+// InitConnection initializes a gRPC connection with Tink server.
+func InitConnection() (Connection, error) {
+	conn, err := getConnection()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{
+		template: template.NewTemplateServiceClient(conn),
+		hardware: hardware.NewHardwareServiceClient(conn),
+		workflow: workflow.NewWorkflowServiceClient(conn),
+	}, nil
+}
+
+// getConnection returns a gRPC client connection
 func getConnection() (*grpc.ClientConn, error) {
 	certURL := os.Getenv("TINKERBELL_CERT_URL")
 	if certURL == "" {

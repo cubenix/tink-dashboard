@@ -28,13 +28,31 @@ import (
 )
 
 // ListWorkflows returns a list of workflows
-func ListWorkflows(ctx context.Context) ([]types.Workflow, error) {
-	return listWorkflowsFromServer(ctx)
+func (c Client) ListWorkflows(ctx context.Context) ([]types.Workflow, error) {
+	res, err := c.workflow.ListWorkflows(ctx, &workflow.Empty{})
+	if err != nil {
+		return nil, err
+	}
+
+	workflows := []types.Workflow{}
+	var wf *workflow.Workflow
+	for wf, err = res.Recv(); err == nil && wf.Template != ""; wf, err = res.Recv() {
+		w, err := c.getWorkflow(ctx, wf.GetId())
+		if err == nil {
+			w.CreatedAt = time.Unix(wf.GetCreatedAt().Seconds, 0).Local().Format(time.UnixDate)
+			workflows = append(workflows, w)
+		}
+	}
+	if err != nil && err != io.EOF {
+		log.Error().Err(err)
+	}
+
+	return workflows, nil
 }
 
 // GetWorkflow returns details for the requested workflow ID
-func GetWorkflow(ctx context.Context, id string) (types.Workflow, error) {
-	wf, err := getWorkflow(ctx, id)
+func (c Client) GetWorkflow(ctx context.Context, id string) (types.Workflow, error) {
+	wf, err := c.getWorkflow(ctx, id)
 	if err != nil {
 		return types.Workflow{}, err
 	}
@@ -43,14 +61,14 @@ func GetWorkflow(ctx context.Context, id string) (types.Workflow, error) {
 }
 
 // ParseWorkflowTemplate parses a template into workflow details
-func ParseWorkflowTemplate(data string) *types.WorkflowDetails {
+func (c Client) ParseWorkflowTemplate(data string) *types.WorkflowDetails {
 	return parseWorkflowYAML(data)
 }
 
-// CreateNewWorkflow creates a new workflow with
+// CreateWorkflow creates a new workflow with
 // selected template and hardware devices
-func CreateNewWorkflow(ctx context.Context, templateID string, hardware string) (string, error) {
-	res, err := workflowClient.CreateWorkflow(ctx, &workflow.CreateRequest{
+func (c Client) CreateWorkflow(ctx context.Context, templateID string, hardware string) (string, error) {
+	res, err := c.workflow.CreateWorkflow(ctx, &workflow.CreateRequest{
 		Template: templateID,
 		Hardware: hardware,
 	})
@@ -61,29 +79,8 @@ func CreateNewWorkflow(ctx context.Context, templateID string, hardware string) 
 	return res.Id, nil
 }
 
-func listWorkflowsFromServer(ctx context.Context) ([]types.Workflow, error) {
-	res, err := workflowClient.ListWorkflows(ctx, &workflow.Empty{})
-	if err != nil {
-		return nil, err
-	}
-
-	workflows := []types.Workflow{}
-	var wf *workflow.Workflow
-	for wf, err = res.Recv(); err == nil && wf.Template != ""; wf, err = res.Recv() {
-		w, err := getWorkflow(ctx, wf.GetId())
-		if err == nil {
-			w.CreatedAt = time.Unix(wf.GetCreatedAt().Seconds, 0).Local().Format(time.UnixDate)
-			workflows = append(workflows, w)
-		}
-	}
-	if err != nil && err != io.EOF {
-		log.Error().Err(err)
-	}
-	return workflows, nil
-}
-
-func getWorkflow(ctx context.Context, id string) (types.Workflow, error) {
-	w, err := workflowClient.GetWorkflow(ctx, &workflow.GetRequest{Id: id})
+func (c Client) getWorkflow(ctx context.Context, id string) (types.Workflow, error) {
+	w, err := c.workflow.GetWorkflow(ctx, &workflow.GetRequest{Id: id})
 	if err != nil {
 		return types.Workflow{}, err
 	}

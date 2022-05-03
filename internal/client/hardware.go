@@ -26,9 +26,9 @@ import (
 	"github.com/tinkerbell/tink/protos/hardware"
 )
 
-// CreateNewHardware creates a new workflow hardware configuration
+// CreateHardware creates a new workflow hardware configuration
 // returns hardware configuration identifier
-func CreateNewHardware(ctx context.Context, data string) (string, error) {
+func (c Client) CreateHardware(ctx context.Context, data string) (string, error) {
 	// use HardwareWrapper for adapted json marshal/unmarshal code
 	var hw pkg.HardwareWrapper
 	err := json.Unmarshal([]byte(data), &hw)
@@ -36,7 +36,7 @@ func CreateNewHardware(ctx context.Context, data string) (string, error) {
 		return "", err
 	}
 
-	_, err = hardwareClient.Push(ctx, &hardware.PushRequest{Data: hw.Hardware})
+	_, err = c.hardware.Push(ctx, &hardware.PushRequest{Data: hw.Hardware})
 	if err != nil {
 		return "", err
 	}
@@ -47,34 +47,8 @@ func CreateNewHardware(ctx context.Context, data string) (string, error) {
 }
 
 // ListHardwares returns a list of workflow hardwares
-func ListHardwares(ctx context.Context) ([]types.Hardware, error) {
-	return listHardwaresFromServer(ctx)
-}
-
-// GetHardware returns details for the requested hardware ID
-func GetHardware(ctx context.Context, id string) (types.Hardware, error) {
-	return getHardwareFromServer(ctx, id)
-}
-
-// UpdateHardware updates the given workflow hardware configuration
-func UpdateHardware(ctx context.Context, id string, data string) error {
-	// use HardwareWrapper for adapted json marshal/unmarshal code
-	var hw pkg.HardwareWrapper
-	err := json.Unmarshal([]byte(data), &hw)
-	if err != nil {
-		log.Error().Err(err)
-	}
-
-	_, err = hardwareClient.Push(ctx, &hardware.PushRequest{Data: hw.Hardware})
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func listHardwaresFromServer(ctx context.Context) ([]types.Hardware, error) {
-	res, err := hardwareClient.All(ctx, &hardware.Empty{})
+func (c Client) ListHardwares(ctx context.Context) ([]types.Hardware, error) {
+	res, err := c.hardware.All(ctx, &hardware.Empty{})
 	if err != nil {
 		return nil, err
 	}
@@ -95,14 +69,16 @@ func listHardwaresFromServer(ctx context.Context) ([]types.Hardware, error) {
 	if err != nil && err != io.EOF {
 		log.Error().Err(err)
 	}
+
 	return hardwares, nil
 }
 
-func getHardwareFromServer(ctx context.Context, id string) (types.Hardware, error) {
+// GetHardware returns details for the requested hardware ID
+func (c Client) GetHardware(ctx context.Context, id string) (types.Hardware, error) {
 	// use HardwareWrapper for adapted json marshal/unmarshal code
 	var h pkg.HardwareWrapper
 	var err error
-	h.Hardware, err = hardwareClient.ByID(ctx, &hardware.GetRequest{Id: id})
+	h.Hardware, err = c.hardware.ByID(ctx, &hardware.GetRequest{Id: id})
 	if err != nil {
 		return types.Hardware{}, err
 	}
@@ -112,7 +88,25 @@ func getHardwareFromServer(ctx context.Context, id string) (types.Hardware, erro
 	}
 
 	hw := fillHardwareFromWrapper(&h)
+
 	return hw, nil
+}
+
+// UpdateHardware updates the given workflow hardware configuration
+func (c Client) UpdateHardware(ctx context.Context, id string, data string) error {
+	// use HardwareWrapper for adapted json marshal/unmarshal code
+	var hw pkg.HardwareWrapper
+	err := json.Unmarshal([]byte(data), &hw)
+	if err != nil {
+		log.Error().Err(err)
+	}
+
+	_, err = c.hardware.Push(ctx, &hardware.PushRequest{Data: hw.Hardware})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func fillHardwareFromWrapper(hw *pkg.HardwareWrapper) types.Hardware {
