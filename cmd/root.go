@@ -17,6 +17,10 @@ package cmd
 import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+
+	"github.com/gauravgahlot/tinker/internal/client"
+	"github.com/gauravgahlot/tinker/internal/config"
+	"github.com/gauravgahlot/tinker/internal/view"
 )
 
 const (
@@ -42,5 +46,31 @@ func Execute() {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	log.Info().Msg("🧑‍🔧 Tinker starting up...")
+	log.Info().Msg("🧑\u200d Tinker starting up...")
+
+	app := view.NewApp(loadConfiguration())
+	if err := app.Init(); err != nil {
+		log.Panic().Err(err)
+	}
+
+	if err := app.Run(); err != nil {
+		log.Panic().Err(err)
+	}
+
+}
+
+func loadConfiguration() *config.Config {
+	cfg := config.NewConfig()
+
+	// TODO: remove it once the basic UI is ready
+	return cfg
+
+	conn, err := client.InitConnection()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to connect with Tink server")
+	}
+
+	cfg.SetConnection(conn)
+
+	return cfg
 }
