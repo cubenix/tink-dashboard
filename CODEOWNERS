@@ -1,8 +1,4 @@
-# See [OWNERS.md](https://github.com/tinkerbell/.github/blob/master/OWNERS.md)
-# for clarity on the responsibilities of the CODEOWNERS.
-#
 # This "*" assignment defines the users that will be notified on all pull
 # requests.
 
-*   @tinkerbell/site-eng
 *   @gauravgahlot

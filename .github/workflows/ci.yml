@@ -1,31 +1,32 @@
-name: CI
+name: Tinker CI
+
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  workflow_dispatch:
+    push:
+      branches: [ master ]
+    pull_request:
+      branches: [ master ]
 jobs:
   build:
-    runs-on: ubuntu-latest
-    env:
-      GO111MODULE: on
-      GOPATH: /home/runner/work/tink-wizard
-      GOBIN: /home/runner/work/tink-wizard/bin
+    runs-on: ubuntu-20.04
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.14
-    - name: Install golint
-      run: |
-        go get -u golang.org/x/lint/golint
-    - name: Before build
-      run: |
-        ./hack/verify-gofmt.sh
-        ./hack/verify-govet.sh
-        ./hack/verify-golint.sh
-        go mod verify
-    - name: Build
-      run: make build
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Setup GO env
+        run: go env -w CGO_ENABLED=0
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install golint
+        run: go get -u golang.org/x/lint/golint
+
+      - name: Before build
+        run: |
+          ./hack/verify-gofmt.sh
+          ./hack/verify-govet.sh
+          ./hack/verify-golint.sh
+          go mod verify

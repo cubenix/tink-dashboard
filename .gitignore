@@ -1,6 +1,4 @@
-server
-**/certs
+tinker
 .DS_Store
 .idea
 .vscode
-redis-data

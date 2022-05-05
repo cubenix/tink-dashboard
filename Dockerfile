@@ -1,9 +1,17 @@
-FROM alpine:3.11
+# -----------------------------------------------------------------------------
+# The base image for building the tinker binary
+FROM golang:1.17-alpine3.14 AS build
 
-ENTRYPOINT ["server"]
-EXPOSE 7676
+WORKDIR /tinker
+COPY go.mod go.sum main.go Makefile ./
+COPY internal internal
+COPY cmd cmd
+RUN apk --no-cache add make git gcc libc-dev curl && make build
 
-COPY src/app/templates /src/app/templates
-COPY src/app/public /src/app/public
+# -----------------------------------------------------------------------------
+# Build the final Docker image
 
-COPY server /bin/
+FROM alpine:3.14.3
+
+COPY --from=build /tinker/tinker /bin/tinker
+ENTRYPOINT [ "/bin/tinker" ]
