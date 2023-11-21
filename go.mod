@@ -7,6 +7,6 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/tinkerbell/tink v0.0.0-20210104083238-9f96b8baf92a
-	google.golang.org/grpc v1.32.0
+	google.golang.org/grpc v1.56.3
 	gopkg.in/yaml.v2 v2.3.0
 )
